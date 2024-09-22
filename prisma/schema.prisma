@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EVEQUE
+  PRETRE
+  APV
+}
+
+enum Genre {
+  H
+  F
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  name      String
+  password  String
+  biometric String?
+  role      Role     @default(APV)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Church {
+  id                  String               @id @default(uuid()) @db.Uuid
+  name                String
+  diocese             String
+  district            String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  apvs                Apv[]
+  christianSacraments ChristianSacrament[]
+}
+
+model Apv {
+  id         String      @id @default(uuid()) @db.Uuid
+  name       String
+  church_id  String      @db.Uuid
+  church     Church      @relation(fields: [church_id], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  christians Christian[]
+}
+
+model Christian {
+  id          String               @id @default(uuid()) @db.Uuid
+  name        String
+  surname     String?
+  bateme_name String?
+  genre       Genre
+  birthdate   DateTime
+  apv_id      String               @db.Uuid
+  apv         Apv                  @relation(fields: [apv_id], references: [id])
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  sacraments  ChristianSacrament[]
+}
+
+model Sacrament {
+  id         String               @id @default(uuid()) @db.Uuid
+  name       String
+  christians ChristianSacrament[]
+}
+
+model ChristianSacrament {
+  id           String    @id @default(uuid()) @db.Uuid
+  christian_id String    @db.Uuid
+  sacrament_id String    @db.Uuid
+  church_id    String    @db.Uuid
+  christian    Christian @relation(fields: [christian_id], references: [id])
+  sacrament    Sacrament @relation(fields: [sacrament_id], references: [id])
+  church       Church    @relation(fields: [church_id], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([christian_id, sacrament_id])
+}
