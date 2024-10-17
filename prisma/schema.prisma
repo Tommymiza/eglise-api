@@ -31,6 +31,7 @@ model User {
   name      String
   password  String
   biometric String?
+  image     String?
   role      Role     @default(APV)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())

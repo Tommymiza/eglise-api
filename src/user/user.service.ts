@@ -5,17 +5,37 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { env } from 'node:process';
+import { createTransport } from 'nodemailer';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(createUserDto: Prisma.UserUncheckedCreateInput) {
+  async create(
+    createUserDto: Omit<Prisma.UserUncheckedCreateInput, 'password'>,
+  ) {
     try {
+      let transporter = createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: env.MAIL_USERNAME,
+          pass: env.MAIL_PASSWORD,
+        },
+      });
+      const randomPassword = Math.random().toString(36).slice(-8);
+      await transporter.sendMail({
+        from: env.MAIL_USERNAME,
+        to: createUserDto.email,
+        subject: 'Bienvenue sur la plateforme EKAR',
+        text: `Votre mot de passe est: ${randomPassword}`,
+      });
       const user = await this.prisma.user.create({
         data: {
           ...createUserDto,
-          password: bcrypt.hashSync(createUserDto.password, 10),
+          password: bcrypt.hashSync(randomPassword, 10),
         },
       });
       delete user.password;
