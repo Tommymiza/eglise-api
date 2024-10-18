@@ -22,6 +22,20 @@ export class ChristianSacramentService {
     }
   }
 
+  async createMany(
+    createChristianSacramentDto: Prisma.ChristianSacramentUncheckedCreateInput[],
+  ) {
+    try {
+      const christianSacraments =
+        await this.prisma.christianSacrament.createMany({
+          data: createChristianSacramentDto,
+        });
+      return christianSacraments;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   async findAll(args?: Prisma.ChristianSacramentFindManyArgs) {
     return this.prisma.christianSacrament.findMany(args);
   }

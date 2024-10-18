@@ -28,6 +28,18 @@ export class ChristianSacramentController {
     return this.christianSacramentService.create(createChristianSacramentDto);
   }
 
+  @Post('many')
+  createMany(
+    @Body()
+    createChristianSacramentDto: {
+      data: CreateChristianSacramentDto[];
+    },
+  ) {
+    return this.christianSacramentService.createMany(
+      createChristianSacramentDto.data,
+    );
+  }
+
   @Get()
   @ApiQuery({ name: 'args', required: false })
   findAll(@Query() { args }: any) {

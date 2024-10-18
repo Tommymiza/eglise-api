@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CreateChristianSacramentDto {
   @ApiProperty()
@@ -16,4 +16,9 @@ export class CreateChristianSacramentDto {
   @IsNotEmpty()
   @IsUUID()
   church_id: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDateString()
+  createdAt: Date;
 }
