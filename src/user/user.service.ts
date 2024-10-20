@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import { hashSync } from 'bcrypt';
 import { env } from 'node:process';
 import { createTransport } from 'nodemailer';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -35,7 +35,7 @@ export class UserService {
       const user = await this.prisma.user.create({
         data: {
           ...createUserDto,
-          password: bcrypt.hashSync(randomPassword, 10),
+          password: hashSync(randomPassword, 10),
         },
       });
       delete user.password;

@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Role, User } from '@prisma/client';
-import { compareSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
+import { ResetDto } from './dto/reset.dto';
 
 export type UserPayload = {
   id: string;
@@ -34,6 +35,24 @@ export class AuthService {
       return {
         token,
       };
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async reset({ user, body }: { user: User; body: ResetDto }) {
+    try {
+      if (body.password !== body.c_password)
+        throw Error("Password doesn't match !");
+      const currentUser = await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          password: hashSync(body.password, 10),
+        },
+      });
+      return currentUser;
     } catch (error) {
       throw new NotFoundException(error.message);
     }
