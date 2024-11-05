@@ -30,7 +30,7 @@ export class AuthService {
         where: { email },
       });
       const isValidPassword = compareSync(password, user.password);
-      if (!isValidPassword) throw new Error('Not a valid password');
+      if (!isValidPassword) throw new Error('Mot de passe invalide !');
       const token = this.jwt.sign({ id: user.id, role: user.role });
       return {
         token,

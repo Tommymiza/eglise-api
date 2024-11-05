@@ -39,4 +39,9 @@ export class CreateChristianDto {
   @IsOptional()
   @IsString()
   bateme_name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDateString()
+  createdAt?: Date;
 }
